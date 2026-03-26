@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Chat App</title>
@@ -24,7 +24,7 @@ function login() {
     let u = username.value;
     let p = password.value;
 
-    fetch(`http://localhost:8080/api/login?username=${u}&password=${p}`, {
+    fetch(`http://turntable.proxy.rlwy.net:19133/api/login?username=${u}&password=${p}`, {
         method: "POST"
     })
     .then(res => res.text())
@@ -43,7 +43,7 @@ function login() {
 function send() {
     let message = msg.value;
 
-    fetch(`http://localhost:8080/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
+    fetch(`http://turntable.proxy.rlwy.net:19133/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
         method: "POST"
     }).then(() => {
         msg.value = "";
@@ -52,7 +52,7 @@ function send() {
 }
 
 function loadMessages() {
-    fetch(`http://localhost:8080/api/messages?u1=${currentUser}&u2=${otherUser}`)
+    fetch(`http://turntable.proxy.rlwy.net:19133/api/messages?u1=${currentUser}&u2=${otherUser}`)
     .then(res => res.json())
     .then(data => {
         chat.innerHTML = "";
@@ -67,8 +67,8 @@ setInterval(loadMessages, 2000);
 </script>
 
 </body>
-</html> -->
-
+</html>
+<!-- 
 <!DOCTYPE html>
 <html>
 <head>
@@ -229,4 +229,4 @@ setInterval(loadMessages, 2000);
 </script>
 
 </body>
-</html>
+</html> -->
