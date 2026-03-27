@@ -34,6 +34,88 @@ function login() {
             currentUser = u;
             otherUser = (u === "user1") ? "user2" : "user1";
             loadMessages();
+            setInterval(loadMessages, 2000); // ✅ Login ஆன பிறகு மட்டும்
+        } else {
+            alert("Login failed");
+        }
+    });
+}
+
+function send() {
+    let message = msg.value;
+    if(!message) return; // ✅ Empty message அனுப்பாம
+
+    fetch(`https://chat-app-production-921e.up.railway.app/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
+        method: "POST"
+    }).then(() => {
+        msg.value = "";
+        loadMessages();
+    });
+}
+
+function loadMessages() {
+    if(!currentUser) return; // ✅ Login ஆகாம call ஆகாது
+
+    fetch(`https://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
+    .then(res => res.json())
+    .then(data => {
+        if(!Array.isArray(data)) {
+            console.error("API error:", data);
+            return;
+        }
+        chat.innerHTML = "";
+        data.forEach(m => {
+            chat.innerHTML += `<p><b>${m.sender}:</b> ${m.content}</p>`;
+        });
+    })
+    .catch(err => console.error("Fetch error:", err));
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Chat App</title>
+</head>
+<body>
+
+<h2>Login</h2>
+<input id="username" placeholder="username">
+<input id="password" placeholder="password">
+<button onclick="login()">Login</button>
+
+<h2>Chat</h2>
+<div id="chat"></div>
+
+<input id="msg">
+<button onclick="send()">Send</button>
+
+<script>
+let currentUser = "";
+let otherUser = "";
+
+function login() {
+    let u = username.value;
+    let p = password.value;
+
+    fetch(`https://chat-app-production-921e.up.railway.app/api/login?username=${u}&password=${p}`, {
+        method: "POST"
+    })
+    .then(res => res.text())
+    .then(data => {
+        if(data === "SUCCESS") {
+            alert("Login success");
+            currentUser = u;
+            otherUser = (u === "user1") ? "user2" : "user1";
+            loadMessages();
         } else {
             alert("Login failed");
         }
@@ -61,13 +143,35 @@ function loadMessages() {
         });
     });
 }
+function loadMessages() {
+    if(!currentUser) return; // login ஆகாம call ஆகுது
+
+    fetch(`https://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
+    .then(res => res.json())
+    .then(data => {
+        // ✅ Array-ஆ இருக்கான்னு check பண்ணு
+        if(!Array.isArray(data)) {
+            console.error("API error:", data);
+            return;
+        }
+
+        chat.innerHTML = "";
+        data.forEach(m => {
+            chat.innerHTML += `<p><b>${m.sender}:</b> ${m.content}</p>`;
+        });
+    })
+    .catch(err => console.error("Fetch error:", err));
+}
+
+
+
 
 // auto refresh
-setInterval(loadMessages, 2000);
+//setInterval(loadMessages, 2000);
 </script>
 
 </body>
-</html>
+</html> -->
 
 
 
