@@ -21,8 +21,8 @@ let currentUser = "";
 let otherUser = "";
 
 function login() {
-    let u = username.value;
-    let p = password.value;
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("password").value;
 
     fetch(`https://chat-app-production-921e.up.railway.app/api/login?username=${u}&password=${p}`, {
         method: "POST"
@@ -34,7 +34,7 @@ function login() {
             currentUser = u;
             otherUser = (u === "user1") ? "user2" : "user1";
             loadMessages();
-            setInterval(loadMessages, 2000); // ✅ Login ஆன பிறகு மட்டும்
+            setInterval(loadMessages, 2000);
         } else {
             alert("Login failed");
         }
@@ -42,19 +42,19 @@ function login() {
 }
 
 function send() {
-    let message = msg.value;
-    if(!message) return; // ✅ Empty message அனுப்பாம
+    let message = document.getElementById("msg").value;
+    if(!message) return;
 
     fetch(`https://chat-app-production-921e.up.railway.app/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
         method: "POST"
     }).then(() => {
-        msg.value = "";
+        document.getElementById("msg").value = "";
         loadMessages();
     });
 }
 
 function loadMessages() {
-    if(!currentUser) return; // ✅ Login ஆகாம call ஆகாது
+    if(!currentUser) return;
 
     fetch(`https://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
     .then(res => res.json())
@@ -63,6 +63,7 @@ function loadMessages() {
             console.error("API error:", data);
             return;
         }
+        let chat = document.getElementById("chat");
         chat.innerHTML = "";
         data.forEach(m => {
             chat.innerHTML += `<p><b>${m.sender}:</b> ${m.content}</p>`;
@@ -76,264 +77,3 @@ function loadMessages() {
 </html>
 
 
-
-
-
-
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>Chat App</title>
-</head>
-<body>
-
-<h2>Login</h2>
-<input id="username" placeholder="username">
-<input id="password" placeholder="password">
-<button onclick="login()">Login</button>
-
-<h2>Chat</h2>
-<div id="chat"></div>
-
-<input id="msg">
-<button onclick="send()">Send</button>
-
-<script>
-let currentUser = "";
-let otherUser = "";
-
-function login() {
-    let u = username.value;
-    let p = password.value;
-
-    fetch(`https://chat-app-production-921e.up.railway.app/api/login?username=${u}&password=${p}`, {
-        method: "POST"
-    })
-    .then(res => res.text())
-    .then(data => {
-        if(data === "SUCCESS") {
-            alert("Login success");
-            currentUser = u;
-            otherUser = (u === "user1") ? "user2" : "user1";
-            loadMessages();
-        } else {
-            alert("Login failed");
-        }
-    });
-}
-
-function send() {
-    let message = msg.value;
-
-    fetch(`https://chat-app-production-921e.up.railway.app/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
-        method: "POST"
-    }).then(() => {
-        msg.value = "";
-        loadMessages();
-    });
-}
-
-function loadMessages() {
-    fetch(`https://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
-    .then(res => res.json())
-    .then(data => {
-        chat.innerHTML = "";
-        data.forEach(m => {
-            chat.innerHTML += `<p><b>${m.sender}:</b> ${m.content}</p>`;
-        });
-    });
-}
-function loadMessages() {
-    if(!currentUser) return; // login ஆகாம call ஆகுது
-
-    fetch(`https://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
-    .then(res => res.json())
-    .then(data => {
-        // ✅ Array-ஆ இருக்கான்னு check பண்ணு
-        if(!Array.isArray(data)) {
-            console.error("API error:", data);
-            return;
-        }
-
-        chat.innerHTML = "";
-        data.forEach(m => {
-            chat.innerHTML += `<p><b>${m.sender}:</b> ${m.content}</p>`;
-        });
-    })
-    .catch(err => console.error("Fetch error:", err));
-}
-
-
-
-
-// auto refresh
-//setInterval(loadMessages, 2000);
-</script>
-
-</body>
-</html> -->
-
-
-
-<!-- 
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat App</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: #ece5dd;
-}
-
-.header {
-    background: #075e54;
-    color: white;
-    padding: 15px;
-    text-align: center;
-}
-
-.chat-box {
-    height: 75vh;
-    overflow-y: scroll;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-}
-
-.message {
-    max-width: 70%;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 10px;
-}
-
-.sender {
-    background: #dcf8c6;
-    align-self: flex-end;
-}
-
-.receiver {
-    background: white;
-    align-self: flex-start;
-}
-
-.input-box {
-    display: flex;
-    padding: 10px;
-    background: #f0f0f0;
-}
-
-input {
-    flex: 1;
-    padding: 10px;
-    border-radius: 20px;
-    border: none;
-}
-
-button {
-    padding: 10px;
-    margin-left: 5px;
-    background: #075e54;
-    color: white;
-    border: none;
-    border-radius: 50%;
-}
-
-/* Mobile optimization */
-@media (max-width: 600px) {
-    .chat-box {
-        height: 70vh;
-    }
-}
-</style>
-</head>
-
-<body>
-
-<div class="header">Private Chat</div>
-
-<div id="login">
-    <input id="username" placeholder="username">
-    <input id="password" placeholder="password">
-    <button onclick="login()">Login</button>
-</div>
-
-<div id="chatUI" style="display:none;">
-    <div id="chat" class="chat-box"></div>
-
-    <div class="input-box">
-        <input id="msg" placeholder="Type message">
-        <button onclick="send()">➤</button>
-    </div>
-</div>
-
-<script>
-let currentUser = "";
-let otherUser = "";
-
-function login() {
-    let u = username.value;
-    let p = password.value;
-
-    fetch(`http://turntable.proxy.rlwy.net:19133/api/login?username=${u}&password=${p}`, {
-        method: "POST"
-    })
-    .then(res => res.text())
-    .then(data => {
-        if(data === "SUCCESS") {
-            currentUser = u;
-            otherUser = (u === "user1") ? "user2" : "user1";
-
-           document.getElementById("login").style.display = "none";
-           document.getElementById("chatUI").style.display = "block";
-
-            loadMessages();
-        } else {
-            alert("Login failed");
-        }
-    });
-}
-
-function send() {
-    let message = msg.value;
-
-    fetch(`http://turntable.proxy.rlwy.net:19133/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
-        method: "POST"
-    }).then(() => {
-        msg.value = "";
-        loadMessages();
-    });
-}
-
-function loadMessages() {
-    fetch(`http://turntable.proxy.rlwy.net:19133/api/messages?u1=${currentUser}&u2=${otherUser}`)
-    .then(res => res.json())
-    .then(data => {
-        chat.innerHTML = "";
-        data.forEach(m => {
-            let div = document.createElement("div");
-            div.classList.add("message");
-
-            if(m.sender === currentUser) {
-                div.classList.add("sender");
-            } else {
-                div.classList.add("receiver");
-            }
-
-            div.innerText = m.content;
-            chat.appendChild(div);
-        });
-
-        chat.scrollTop = chat.scrollHeight;
-    });
-}
-
-setInterval(loadMessages, 2000);
-</script>
-
-</body>
-</html> -->
