@@ -24,7 +24,7 @@ function login() {
     let u = username.value;
     let p = password.value;
 
-    fetch(`https://chat-app-production-921e.up.railway.app//api/login?username=${u}&password=${p}`, {
+    fetch(`https://chat-app-production-921e.up.railway.app/api/login?username=${u}&password=${p}`, {
         method: "POST"
     })
     .then(res => res.text())
@@ -43,7 +43,7 @@ function login() {
 function send() {
     let message = msg.value;
 
-    fetch(`https://chat-app-production-921e.up.railway.app//api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
+    fetch(`https://chat-app-production-921e.up.railway.app/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
         method: "POST"
     }).then(() => {
         msg.value = "";
@@ -52,7 +52,7 @@ function send() {
 }
 
 function loadMessages() {
-    fetch(`https://chat-app-production-921e.up.railway.app//api/messages?u1=${currentUser}&u2=${otherUser}`)
+    fetch(`https://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
     .then(res => res.json())
     .then(data => {
         chat.innerHTML = "";
@@ -68,6 +68,9 @@ setInterval(loadMessages, 2000);
 
 </body>
 </html>
+
+
+
 <!-- 
 <!DOCTYPE html>
 <html>
