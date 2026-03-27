@@ -25,7 +25,7 @@ function login() {
     let u = document.getElementById("username").value;
     let p = document.getElementById("password").value;
 
-    fetch(`https://chat-app-production-921e.up.railway.app/api/login?username=${u}&password=${p}`, {
+    fetch(`http://chat-app-production-921e.up.railway.app/api/login?username=${u}&password=${p}`, {
         method: "POST"
     })
     .then(res => res.text())
@@ -49,7 +49,7 @@ function send() {
     let message = document.getElementById("msg").value;
     if(!message) return;
 
-    fetch(`https://chat-app-production-921e.up.railway.app/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
+    fetch(`http://chat-app-production-921e.up.railway.app/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
         method: "POST"
     }).then(() => {
         document.getElementById("msg").value = "";
@@ -60,7 +60,7 @@ function send() {
 function loadMessages() {
     if(!currentUser || !otherUser) return;
 
-    fetch(`https://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
+    fetch(`http://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
     .then(res => res.json())
     .then(data => {
         if(!Array.isArray(data)) {

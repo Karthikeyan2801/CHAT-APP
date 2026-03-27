@@ -16,9 +16,7 @@ public class Message {
     private String content;
 
     // getters setters
-     public String getid() { return id; }
-    public void setid(String id) { this.id = id; }
-
+   
 
     public String getSender() { return sender; }
     public void setSender(String sender) { this.sender = sender; }
