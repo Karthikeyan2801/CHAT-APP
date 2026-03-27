@@ -19,6 +19,7 @@
 <script>
 let currentUser = "";
 let otherUser = "";
+let intervalStarted = false;
 
 function login() {
     let u = document.getElementById("username").value;
@@ -34,7 +35,10 @@ function login() {
             currentUser = u;
             otherUser = (u === "user1") ? "user2" : "user1";
             loadMessages();
-            setInterval(loadMessages, 2000);
+           if(!intervalStarted){
+                setInterval(loadMessages, 2000);
+                intervalStarted = true;
+            }
         } else {
             alert("Login failed");
         }
@@ -54,7 +58,7 @@ function send() {
 }
 
 function loadMessages() {
-    if(!currentUser) return;
+    if(!currentUser || !otherUser) return;
 
     fetch(`https://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
     .then(res => res.json())
