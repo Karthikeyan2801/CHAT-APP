@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <title>Chat App</title>
@@ -25,7 +25,7 @@ function login() {
     let u = document.getElementById("username").value;
     let p = document.getElementById("password").value;
 
-    fetch(`https://chat-app-production-921e.up.railway.app/api/login?username=${u}&password=${p}`, {
+    fetch(`http://localhost:8080/api/login?username=${u}&password=${p}`, {
         method: "POST"
     })
     .then(res => res.text())
@@ -49,7 +49,7 @@ function send() {
     let message = document.getElementById("msg").value;
     if(!message) return;
 
-    fetch(`https://chat-app-production-921e.up.railway.app/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
+    fetch(`http://localhost:8080/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`, {
         method: "POST"
     }).then(() => {
         document.getElementById("msg").value = "";
@@ -60,7 +60,7 @@ function send() {
 function loadMessages() {
     if(!currentUser || !otherUser) return;
 
-    fetch(`https://chat-app-production-921e.up.railway.app/api/messages?u1=${currentUser}&u2=${otherUser}`)
+    fetch(`http://localhost:8080/api/messages?u1=${currentUser}&u2=${otherUser}`)
     .then(res => res.json())
     .then(data => {
         if(!Array.isArray(data)) {
@@ -81,3 +81,367 @@ function loadMessages() {
 </html>
 
 
+
+
+ -->
+
+
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp Style Chat</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    background:#0b141a;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* MOBILE CONTAINER */
+.mobile{
+    width:380px;
+    height:95vh;
+    background:#111b21;
+    border-radius:25px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+/* HEADER */
+.header{
+    background:#202c33;
+    padding:15px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:white;
+}
+
+.profile{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#25d366;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.header-info h3{
+    font-size:16px;
+}
+
+.header-info p{
+    font-size:12px;
+    color:#b0b3b8;
+}
+
+/* LOGIN AREA */
+.login-box{
+    padding:15px;
+    background:#111b21;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.login-box input{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+    background:#202c33;
+    color:white;
+}
+
+.login-box button{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#25d366;
+    color:white;
+    font-size:15px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.login-box button:hover{
+    background:#1ebe5d;
+}
+
+/* CHAT AREA */
+.chat-container{
+    flex:1;
+    overflow-y:auto;
+    padding:15px;
+    background:url('https://i.imgur.com/3e5p9.jpg');
+    background-size:cover;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+/* MESSAGE */
+.message{
+    max-width:75%;
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:14px;
+    word-wrap:break-word;
+    position:relative;
+}
+
+/* SENT */
+.sent{
+    align-self:flex-end;
+    background:#005c4b;
+    color:white;
+    border-bottom-right-radius:2px;
+}
+
+/* RECEIVED */
+.received{
+    align-self:flex-start;
+    background:#202c33;
+    color:white;
+    border-bottom-left-radius:2px;
+}
+
+.time{
+    display:block;
+    font-size:10px;
+    margin-top:5px;
+    text-align:right;
+    opacity:0.7;
+}
+
+/* INPUT AREA */
+.input-area{
+    background:#202c33;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.input-area input{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:25px;
+    background:#2a3942;
+    color:white;
+    outline:none;
+}
+
+.send-btn{
+    width:50px;
+    height:50px;
+    border:none;
+    border-radius:50%;
+    background:#25d366;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+/* SCROLL */
+.chat-container::-webkit-scrollbar{
+    width:5px;
+}
+
+.chat-container::-webkit-scrollbar-thumb{
+    background:#555;
+    border-radius:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="mobile">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="profile" id="profileLetter">U</div>
+
+        <div class="header-info">
+            <h3 id="chatName">Chat App</h3>
+            <p>Online</p>
+        </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="login-box">
+        <input id="username" placeholder="Enter username">
+        <input id="password" type="password" placeholder="Enter password">
+
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat-container" id="chat"></div>
+
+    <!-- INPUT -->
+    <div class="input-area">
+        <input id="msg" placeholder="Type a message">
+        <button class="send-btn" onclick="send()">➤</button>
+    </div>
+
+</div>
+
+<script>
+
+let currentUser = "";
+let otherUser = "";
+let intervalStarted = false;
+
+/* LOGIN */
+
+function login() {
+
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("password").value;
+
+    fetch(`http://localhost:8080/api/login?username=${u}&password=${p}`,{
+        method:"POST"
+    })
+
+    .then(res => res.text())
+
+    .then(data => {
+
+        if(data === "SUCCESS"){
+
+            alert("Login Success");
+
+            currentUser = u;
+
+            otherUser = (u === "user1") ? "user2" : "user1";
+
+            document.getElementById("chatName").innerText = otherUser;
+
+            document.getElementById("profileLetter").innerText =
+            otherUser.charAt(0).toUpperCase();
+
+            loadMessages();
+
+            if(!intervalStarted){
+
+                setInterval(loadMessages,2000);
+
+                intervalStarted = true;
+            }
+
+        }else{
+
+            alert("Login Failed");
+        }
+    });
+}
+
+/* SEND MESSAGE */
+
+function send(){
+
+    let message = document.getElementById("msg").value;
+
+    if(!message) return;
+
+    fetch(`http://localhost:8080/api/send?sender=${currentUser}&receiver=${otherUser}&content=${message}`,{
+
+        method:"POST"
+
+    }).then(() => {
+
+        document.getElementById("msg").value = "";
+
+        loadMessages();
+    });
+}
+
+/* LOAD MESSAGES */
+
+function loadMessages(){
+
+    if(!currentUser || !otherUser) return;
+
+    fetch(`http://localhost:8080/api/messages?u1=${currentUser}&u2=${otherUser}`)
+
+    .then(res => res.json())
+
+    .then(data => {
+
+        if(!Array.isArray(data)){
+
+            console.error("API Error:",data);
+
+            return;
+        }
+
+        let chat = document.getElementById("chat");
+
+        chat.innerHTML = "";
+
+        data.forEach(m => {
+
+            let isMine = m.sender === currentUser;
+
+            let msgDiv = document.createElement("div");
+
+            msgDiv.classList.add("message");
+
+            msgDiv.classList.add(isMine ? "sent" : "received");
+
+            let time = new Date().toLocaleTimeString([],{
+                hour:'2-digit',
+                minute:'2-digit'
+            });
+
+            msgDiv.innerHTML = `
+                ${m.content}
+                <span class="time">${time}</span>
+            `;
+
+            chat.appendChild(msgDiv);
+        });
+
+        chat.scrollTop = chat.scrollHeight;
+
+    })
+
+    .catch(err => console.error(err));
+}
+
+/* ENTER KEY SEND */
+
+document.getElementById("msg").addEventListener("keypress",function(e){
+
+    if(e.key === "Enter"){
+
+        send();
+    }
+});
+
+</script>
+
+</body>
+</html>
